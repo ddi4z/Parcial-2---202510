@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
+import { Controller, Get, Post, Body, Param } from '@nestjs/common';
 import { EstudiantesService } from './estudiantes.service';
 import { CreateEstudianteDto } from './dto/create-estudiante.dto';
 import { plainToInstance } from 'class-transformer';
@@ -14,18 +14,19 @@ export class EstudiantesController {
     return this.estudiantesService.crearEstudiante(estudiante);
   }
 
-  @Get()
-  findAll() {
-    return this.estudiantesService.findAll();
-  }
-
   @Get(':id')
   findEstudianteById(@Param('id') id: string) {
     return this.estudiantesService.findEstudianteById(+id);
   }
 
-  @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.estudiantesService.remove(+id);
+  @Post(':estudianteID/inscripcion/actividadID')
+  inscribirseActividad(
+    @Param('estudianteID') estudianteID: string,
+    @Param('actividadID') actividadID: string,
+  ) {
+    return this.estudiantesService.inscribirseActividad(
+      +estudianteID,
+      +actividadID,
+    );
   }
 }

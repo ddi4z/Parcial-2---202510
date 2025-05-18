@@ -1,9 +1,9 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param } from '@nestjs/common';
 import { ActividadesService } from './actividades.service';
 import { CreateActividadDto } from './dto/create-actividad.dto';
-import { UpdateActividadDto } from './dto/update-actividad.dto';
 import { plainToInstance } from 'class-transformer';
 import { Actividad } from './entities/actividad.entity';
+import { UpdateActividadDto } from './dto/update-actividad.dto';
 
 @Controller('actividades')
 export class ActividadesController {
@@ -15,26 +15,18 @@ export class ActividadesController {
     return this.actividadesService.crearActividad(actividad);
   }
 
-  @Get()
-  findAll() {
-    return this.actividadesService.findAll();
-  }
-
-  @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.actividadesService.findOne(+id);
-  }
-
   @Patch(':id')
-  update(
+  cambiarEstado(
     @Param('id') id: string,
     @Body() updateActividadDto: UpdateActividadDto,
   ) {
-    return this.actividadesService.update(+id, updateActividadDto);
+    const actividadID = parseInt(id, 10);
+    const { estado } = updateActividadDto;
+    return this.actividadesService.cambiarEstado(actividadID, estado);
   }
 
-  @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.actividadesService.remove(+id);
+  @Get(':fecha')
+  findAllActividadesByDate(@Param('fecha') fecha: string) {
+    return this.actividadesService.findAllActividadesByDate(fecha);
   }
 }

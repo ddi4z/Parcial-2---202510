@@ -1,6 +1,9 @@
 import { Injectable } from '@nestjs/common';
 import { Estudiante } from './entities/estudiante.entity';
-import { BusinessError, BusinessLogicException } from 'src/shared/errors/business-errors';
+import {
+  BusinessError,
+  BusinessLogicException,
+} from '../shared/errors/business-errors';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { ActividadesService } from 'src/actividades/actividades.service';
@@ -14,12 +17,15 @@ export class EstudiantesService {
   ) {}
 
   async crearEstudiante(estudiante: Estudiante) {
-    if (!estudiante.correo || estudiante.correo === '') {
+    const correoRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+    if (!estudiante.correo || !correoRegex.test(estudiante.correo)) {
       throw new BusinessLogicException(
-        'Correo no valido',
-        BusinessError.PRECONDITION_FAILED,
+        'Correo no válido',
+        BusinessError.BAD_REQUEST,
       );
     }
+
     if (
       !estudiante.semestre ||
       estudiante.semestre < 1 ||
@@ -27,14 +33,11 @@ export class EstudiantesService {
     ) {
       throw new BusinessLogicException(
         'Semestre debe estar entre 1 y 10',
-        BusinessError.PRECONDITION_FAILED,
+        BusinessError.BAD_REQUEST,
       );
     }
-    return await this.estudianteRepository.save(estudiante);
-  }
 
-  findAll() {
-    return `This action returns all estudiantes`;
+    return await this.estudianteRepository.save(estudiante);
   }
 
   async findEstudianteById(id: number) {
@@ -55,10 +58,16 @@ export class EstudiantesService {
     const actividad =
       await this.actividadesService.findActividadById(actividadID);
 
-    return 
-  }
-
-  remove(id: number) {
-    return `This action removes a #${id} estudiante`;
+    const estaInscrito = estudiante.actividades.some(
+      (a) => a.id === actividad.id,
+    );
+    if (estaInscrito) {
+      throw new BusinessLogicException(
+        'Estudiante ya inscrito a la actvidad',
+        BusinessError.PRECONDITION_FAILED,
+      );
+    }
+    estudiante.actividades = [...(estudiante.actividades || []), actividad];
+    return await this.estudianteRepository.save(estudiante);
   }
 }

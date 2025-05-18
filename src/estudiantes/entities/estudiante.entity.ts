@@ -25,5 +25,5 @@ export class Estudiante extends Base {
 
   @ManyToMany(() => Actividad, (actividad) => actividad.estudiantes)
   @JoinTable()
-  actividades: Actividad;
+  actividades: Actividad[];
 }
