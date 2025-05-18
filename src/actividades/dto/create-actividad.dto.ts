@@ -3,7 +3,6 @@ import {
   IsDateString,
   IsInt,
   Min,
-  Max,
   IsNotEmpty,
 } from 'class-validator';
 
@@ -18,9 +17,4 @@ export class CreateActividadDto {
   @IsInt()
   @Min(1)
   cupoMaximo: number;
-
-  @IsInt()
-  @Min(0)
-  @Max(2)
-  estado: number;
 }

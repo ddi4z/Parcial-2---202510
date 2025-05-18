@@ -15,6 +15,7 @@ export class ActividadesService {
   ) {}
 
   async crearActividad(actividad: Actividad) {
+    actividad.estado = 0;
     const tituloValido = /^[a-zA-Z0-9\s]+$/.test(actividad.titulo);
     if (actividad.titulo.length < 15) {
       throw new BusinessLogicException(
