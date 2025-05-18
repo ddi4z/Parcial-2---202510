@@ -1,10 +1,12 @@
 import { Test, TestingModule } from '@nestjs/testing';
+import { getRepositoryToken } from '@nestjs/typeorm';
+import { Repository } from 'typeorm';
 import { ReseñasService } from './reseñas.service';
 import { Reseña } from './entities/reseña.entity';
-import { Repository } from 'typeorm';
-import { getRepositoryToken } from '@nestjs/typeorm';
-import { TypeOrmTestingConfig } from '../shared/testing-utils/typeorm-testing-config';
-import { faker } from '@faker-js/faker';
+import { Estudiante } from '../estudiantes/entities/estudiante.entity';
+import { Actividad } from '../actividades/entities/actividad.entity';
+import { plainToInstance } from 'class-transformer';
+import { BusinessLogicException } from '../shared/errors/business-errors';
 
 describe('ReseñasService', () => {
   let service: ReseñasService;
@@ -12,29 +14,67 @@ describe('ReseñasService', () => {
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
-      imports: [...TypeOrmTestingConfig()],
-      providers: [ReseñasService],
+      providers: [
+        ReseñasService,
+        {
+          provide: getRepositoryToken(Reseña),
+          useClass: Repository,
+        },
+      ],
     }).compile();
 
     service = module.get<ReseñasService>(ReseñasService);
     reseñaRepository = module.get<Repository<Reseña>>(
       getRepositoryToken(Reseña),
     );
-    await seedDatabase();
   });
 
-  it('should be defined', () => {
-    expect(service).toBeDefined();
+  it('should successfully add a valid review', async () => {
+    const actividad = plainToInstance(Actividad, {
+      id: 1,
+      estado: 2,
+    });
+
+    const estudiante = plainToInstance(Estudiante, {
+      id: 1,
+      actividades: [{ id: 1 }],
+    });
+
+    const reseña = plainToInstance(Reseña, {
+      comentario: 'Great activity',
+      calificacion: 5,
+      actividad,
+      estudiante,
+    });
+
+    jest.spyOn(reseñaRepository, 'save').mockResolvedValue(reseña);
+    const result = await service.agregarReseña(reseña);
+
+    expect(result).toBeDefined();
+    expect(result.comentario).toEqual('Great activity');
+    expect(result.calificacion).toEqual(5);
   });
 
-  const seedDatabase = async () => {
-    await reseñaRepository.clear();
-    for (let i = 0; i < 5; i++) {
-      await reseñaRepository.save({
-        comentario: faker.lorem.sentence(),
-        calificacion: faker.number.int({ min: 1, max: 5 }),
-        fecha: faker.date.recent().toISOString(),
-      });
-    }
-  };
+  it('should throw an exception if the activity is not finished', async () => {
+    const actividad = plainToInstance(Actividad, {
+      id: 2,
+      estado: 1,
+    });
+
+    const estudiante = plainToInstance(Estudiante, {
+      id: 2,
+      actividades: [{ id: 2 }],
+    });
+
+    const reseña = plainToInstance(Reseña, {
+      comentario: 'Invalid review',
+      calificacion: 3,
+      actividad,
+      estudiante,
+    });
+
+    await expect(service.agregarReseña(reseña)).rejects.toThrow(
+      BusinessLogicException,
+    );
+  });
 });
