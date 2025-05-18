@@ -1,7 +1,7 @@
 import { Entity, Column, ManyToMany, OneToMany } from 'typeorm';
-import { Estudiante } from 'src/estudiantes/entities/estudiante.entity';
+import { Estudiante } from '../../estudiantes/entities/estudiante.entity';
 import { Base } from '../../shared/base.entity';
-import { Reseña } from 'src/reseñas/entities/reseña.entity';
+import { Reseña } from '../../reseñas/entities/reseña.entity';
 
 @Entity()
 export class Actividad extends Base {

@@ -6,7 +6,7 @@ import {
 } from '../shared/errors/business-errors';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
-import { ActividadesService } from 'src/actividades/actividades.service';
+import { ActividadesService } from '../actividades/actividades.service';
 
 @Injectable()
 export class EstudiantesService {
@@ -43,6 +43,7 @@ export class EstudiantesService {
   async findEstudianteById(id: number) {
     const estudiante = await this.estudianteRepository.findOne({
       where: { id },
+      relations: ['actividades'],
     });
     if (!estudiante) {
       throw new BusinessLogicException(
@@ -58,7 +59,7 @@ export class EstudiantesService {
     const actividad =
       await this.actividadesService.findActividadById(actividadID);
 
-    const estaInscrito = estudiante.actividades.some(
+    const estaInscrito = (estudiante.actividades ?? []).some(
       (a) => a.id === actividad.id,
     );
     if (estaInscrito) {
@@ -67,7 +68,7 @@ export class EstudiantesService {
         BusinessError.PRECONDITION_FAILED,
       );
     }
-    estudiante.actividades = [...(estudiante.actividades || []), actividad];
+    estudiante.actividades = [...(estudiante.actividades ?? []), actividad];
     return await this.estudianteRepository.save(estudiante);
   }
 }

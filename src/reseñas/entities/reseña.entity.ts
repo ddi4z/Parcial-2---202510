@@ -1,5 +1,5 @@
-import { Actividad } from 'src/actividades/entities/actividad.entity';
-import { Estudiante } from 'src/estudiantes/entities/estudiante.entity';
+import { Actividad } from '../../actividades/entities/actividad.entity';
+import { Estudiante } from '../../estudiantes/entities/estudiante.entity';
 import { Column, Entity, ManyToOne } from 'typeorm';
 import { Base } from '../../shared/base.entity';
 

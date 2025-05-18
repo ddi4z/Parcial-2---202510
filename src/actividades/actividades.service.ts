@@ -5,7 +5,7 @@ import { Actividad } from './entities/actividad.entity';
 import {
   BusinessError,
   BusinessLogicException,
-} from 'src/shared/errors/business-errors';
+} from '../shared/errors/business-errors';
 
 @Injectable()
 export class ActividadesService {
@@ -70,6 +70,7 @@ export class ActividadesService {
   async findActividadById(id: number) {
     const actividad = await this.actividadRepository.findOne({
       where: { id },
+      relations: ['estudiantes'],
     });
     if (!actividad) {
       throw new BusinessLogicException(

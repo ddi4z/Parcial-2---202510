@@ -12,6 +12,10 @@ export class CreateEstudianteDto {
   @IsEmail()
   correo: string;
 
+  @IsInt()
+  @Min(1)
+  semestre: number;
+
   @IsString()
   @IsNotEmpty()
   programa: string;
