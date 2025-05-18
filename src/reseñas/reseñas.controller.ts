@@ -1,12 +1,14 @@
-import { Controller, Post, Body } from '@nestjs/common';
+import { Controller, Post, Body, UseInterceptors } from '@nestjs/common';
 import { ReseñasService } from './reseñas.service';
 import { CreateReseñaDto } from './dto/create-reseña.dto';
 import { plainToInstance } from 'class-transformer';
 import { Reseña } from './entities/reseña.entity';
 import { EstudiantesService } from '../estudiantes/estudiantes.service';
 import { ActividadesService } from '../actividades/actividades.service';
+import { BusinessErrorsInterceptor } from '../shared/interceptors/business.errors.interceptor';
 
-@Controller('reseñas')
+@UseInterceptors(BusinessErrorsInterceptor)
+@Controller('resenas')
 export class ReseñasController {
   constructor(
     private readonly reseñasService: ReseñasService,

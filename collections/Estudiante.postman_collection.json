@@ -1,0 +1,289 @@
+{
+	"info": {
+		"_postman_id": "f735562f-3ca6-4dcc-80b1-0f0048d46c5d",
+		"name": "Estudiante",
+		"description": "Aqui se incluyen ejemplo de peticiones tanto negativas como positivas referentes a los endpoints asociados al recurso de Estudiantes.",
+		"schema": "https://schema.getpostman.com/json/collection/v2.0.0/collection.json",
+		"_exporter_id": "21958576"
+	},
+	"item": [
+		{
+			"name": "crear estudiante",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"var data = pm.response.json();",
+							"pm.globals.set(\"ESTUDIANTE_ID\",data.id)",
+							"",
+							"pm.test(\"Response status code is 201\", function () {",
+							"    pm.response.to.have.status(201);",
+							"});",
+							""
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n  \"cedula\": 1000000000,\r\n  \"nombre\": \"Daniel Felipe Diaz Moreno\",\r\n  \"correo\": \"d.diazm@uniandes.edu.co\",\r\n  \"semestre\": 7,\r\n  \"programa\": \"sistemas\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": "{{base_url}}/estudiantes",
+				"description": "Esta petición POST crea un estudiante, el cual debe estar entre semestre 1 y 10. El cuerpo de la petición debe tener la cedula, nombre, correo, semestre y programa."
+			},
+			"response": []
+		},
+		{
+			"name": "crear actividad",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"var data = pm.response.json();",
+							"pm.globals.set(\"ACTIVIDAD_ID\",data.id)",
+							"",
+							"pm.test(\"Response status code is 201\", function () {",
+							"    pm.response.to.have.status(201);",
+							"});",
+							""
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n  \"titulo\": \"Este es un titulo de ejemplo\",\r\n  \"fecha\": \"2025-05-18T15:30:00Z\",\r\n  \"cupoMaximo\": 10\r\n\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": "{{base_url}}/actividades",
+				"description": "Esta petición POST crea una actividad, la cual debe tener un titulo de al menos 15 caracteres y no debe tener caracteres especiales. Recibe un titulo, una fecha, y un cupo maximo. Toda actividad se crea con estado 0 (abierta). Esta petición se realiza en esta colección para poder inscribir a un estudiante."
+			},
+			"response": []
+		},
+		{
+			"name": "crear estudiante con semestre no valido",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Response status code is 400\", function () {",
+							"    pm.response.to.have.status(400);",
+							"});"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n  \"cedula\": 1000000000,\r\n  \"nombre\": \"Daniel Felipe Diaz Moreno\",\r\n  \"correo\": \"d.diazm@uniandes.edu.co\",\r\n  \"semestre\": 11,\r\n  \"programa\": \"sistemas\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": "{{base_url}}/estudiantes",
+				"description": "Similar a la consulta de crear usuario. Sin embargo, arroja el error 400 debido a que el semestre no es valido."
+			},
+			"response": []
+		},
+		{
+			"name": "crear estudiante con correo no valido",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Response status code is 400\", function () {",
+							"    pm.response.to.have.status(400);",
+							"});"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n  \"cedula\": 1000000000,\r\n  \"nombre\": \"Daniel Felipe Diaz Moreno\",\r\n  \"correo\": \"d.diazmuniandes.edu.co\",\r\n  \"semestre\": 7,\r\n  \"programa\": \"sistemas\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": "{{base_url}}/estudiantes",
+				"description": "Similar a la consulta de crear usuario. Sin embargo, arroja el error 400 debido a que el correo no es valido."
+			},
+			"response": []
+		},
+		{
+			"name": "encontrar estudiante por id",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Successful GET request and correct student ID\", function () {",
+							"    pm.expect(pm.response.code).to.be.oneOf([200, 201]);",
+							"",
+							"    const responseJson = pm.response.json();",
+							"    const expectedId = parseInt(pm.variables.get(\"ESTUDIANTE_ID\"), 10);",
+							"",
+							"    pm.expect(responseJson.id).to.eql(expectedId);",
+							"});",
+							""
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": "{{base_url}}/estudiantes/{{ESTUDIANTE_ID}}",
+				"description": "Esta petición GET devuelve un estudiante dado un id."
+			},
+			"response": []
+		},
+		{
+			"name": "encontrar estudiante por id que no existe",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Response status code is 404\", function () {",
+							"    pm.response.to.have.status(404);",
+							"});"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": "{{base_url}}/estudiantes/-1",
+				"description": "Esta petición arroja el error 404 al no encontrarse un estudiante con el id dado."
+			},
+			"response": []
+		},
+		{
+			"name": "inscribir estudiante a actividad",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 201\", function () {",
+							"    pm.response.to.have.status(201);",
+							"});"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [],
+				"url": "{{base_url}}/estudiantes/{{ESTUDIANTE_ID}}/inscripcion/{{ACTIVIDAD_ID}}",
+				"description": "Este endpoint POST permite inscribir a un estudiante a una actividad, siempre y cuando ambos existan y el estudiante no este inscrito."
+			},
+			"response": []
+		},
+		{
+			"name": "inscribir estudiante a actividad ya inscrita",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Estudiante ya inscrito a la actividad (HTTP 412)\", function () {",
+							"    pm.response.to.have.status(412);",
+							"",
+							"    const responseJson = pm.response.json();",
+							"    const expectedMessage = \"Estudiante ya inscrito a la actividad\";",
+							"",
+							"    pm.expect(responseJson).to.have.property(\"message\", expectedMessage);",
+							"});",
+							""
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [],
+				"url": "{{base_url}}/estudiantes/{{ESTUDIANTE_ID}}/inscripcion/{{ACTIVIDAD_ID}}",
+				"description": "La peticióon arroja el error 412, ya que no se cumple con la precondición de que el estudiante no este inscrito a la actividad."
+			},
+			"response": []
+		}
+	],
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		}
+	],
+	"variable": [
+		{
+			"key": "id",
+			"value": "1"
+		},
+		{
+			"key": "base_url",
+			"value": "https://postman-rest-api-learner.glitch.me/"
+		}
+	]
+}

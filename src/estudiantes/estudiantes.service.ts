@@ -58,13 +58,12 @@ export class EstudiantesService {
     const estudiante = await this.findEstudianteById(estudianteID);
     const actividad =
       await this.actividadesService.findActividadById(actividadID);
-
     const estaInscrito = (estudiante.actividades ?? []).some(
       (a) => a.id === actividad.id,
     );
     if (estaInscrito) {
       throw new BusinessLogicException(
-        'Estudiante ya inscrito a la actvidad',
+        'Estudiante ya inscrito a la actividad',
         BusinessError.PRECONDITION_FAILED,
       );
     }

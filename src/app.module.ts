@@ -28,7 +28,7 @@ import { Estudiante } from './estudiantes/entities/estudiante.entity';
       database: process.env.DB_NAME ?? 'parcial2DB',
       entities: [Reseña, Actividad, Estudiante],
       synchronize: true,
-      dropSchema: false,
+      dropSchema: true,
     }),
   ],
   controllers: [AppController],

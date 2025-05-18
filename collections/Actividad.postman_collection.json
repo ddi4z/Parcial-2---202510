@@ -1,0 +1,315 @@
+{
+	"info": {
+		"_postman_id": "d1ca4dea-d654-4adb-ae83-0d8f8ceb44c7",
+		"name": "Actividad",
+		"description": "Aqui se incluyen ejemplo de peticiones tanto negativas como positivas referentes a los endpoints asociados al recurso de Actividades.",
+		"schema": "https://schema.getpostman.com/json/collection/v2.0.0/collection.json",
+		"_exporter_id": "21958576"
+	},
+	"item": [
+		{
+			"name": "crear actividad",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"var data = pm.response.json();",
+							"pm.globals.set(\"ACTIVIDAD_ID\",data.id)",
+							"",
+							"pm.test(\"Response status code is 201\", function () {",
+							"    pm.response.to.have.status(201);",
+							"});",
+							""
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n  \"titulo\": \"Este es un titulo de ejemplo\",\r\n  \"fecha\": \"2025-05-18T15:30:00Z\",\r\n  \"cupoMaximo\": 10\r\n\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": "{{base_url}}/actividades",
+				"description": "Esta petición POST crea una actividad, la cual debe tener un titulo de al menos 15 caracteres y no debe tener caracteres especiales. Recibe un titulo, una fecha, y un cupo maximo. Toda actividad se crea con estado 0 (abierta)."
+			},
+			"response": []
+		},
+		{
+			"name": "crear actividad con otra fecha",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"var data = pm.response.json();",
+							"pm.globals.set(\"FECHA_2\",data.fecha)",
+							"",
+							"pm.test(\"Response status code is 201\", function () {",
+							"    pm.response.to.have.status(201);",
+							"});",
+							""
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n  \"titulo\": \"Este es un titulo de ejemplo\",\r\n  \"fecha\": \"2025-06-18T15:30:00Z\",\r\n  \"cupoMaximo\": 10\r\n\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": "{{base_url}}/actividades",
+				"description": "Esta petición hace lo mismo que la anterior, pero cambiando la fecha, esto con el fin de demostrar que que el metodo de obtener actividades por fecha funciona correctamente"
+			},
+			"response": []
+		},
+		{
+			"name": "crear actividad con longitud de titulo no valida",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Response status code is 400\", function () {",
+							"    pm.response.to.have.status(400);",
+							"});"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n  \"titulo\": \"Este\",\r\n  \"fecha\": \"2025-05-18T15:30:00Z\",\r\n  \"cupoMaximo\": 10\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": "{{base_url}}/actividades",
+				"description": "Esta petición POST crea una actividad con un titulo corto, lo que ocasiona un error 400."
+			},
+			"response": []
+		},
+		{
+			"name": "crear actividad con titulo no valido",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Response status code is 400\", function () {",
+							"    pm.response.to.have.status(400);",
+							"});"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n  \"titulo\": \"$anta fe\",\r\n  \"fecha\": \"2025-05-18T15:30:00Z\",\r\n  \"cupoMaximo\": 10\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": "{{base_url}}/actividades",
+				"description": "Esta petición crea una actividad con un titulo con caracteres especiales, lo que genera un error 400."
+			},
+			"response": []
+		},
+		{
+			"name": "encontrar actividad por fecha",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Successful GET request and all items have the correct fecha\", function () {",
+							"  pm.expect(pm.response.code).to.be.oneOf([200, 201]);",
+							"  ",
+							"  const responseJson = pm.response.json();",
+							"  const expectedDate = pm.globals.get(\"FECHA\");",
+							"",
+							"  const allMatchDate = responseJson.every(item => item.fecha === expectedDate);",
+							"  pm.expect(allMatchDate).to.be.true;",
+							"});",
+							""
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": "{{base_url}}/actividades/{{FECHA}}",
+				"description": "Encuentra todas las actividades con fecha igual a la especificada."
+			},
+			"response": []
+		},
+		{
+			"name": "encontrar actividad por fecha invalida",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Successful GET request and all items have the correct fecha\", function () {",
+							"  pm.expect(pm.response.code).to.be.oneOf([200, 201]);",
+							"  ",
+							"  const responseJson = pm.response.json();",
+							"  const expectedDate = pm.globals.get(\"FECHA\");",
+							"",
+							"  const allMatchDate = responseJson.every(item => item.fecha === expectedDate);",
+							"  pm.expect(allMatchDate).to.be.true;",
+							"});",
+							""
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": "{{base_url}}/actividades/fecha",
+				"description": "En caso de que la fecha no sea valida, no se lanzará un error, pero se devolvera un arreglo vacio."
+			},
+			"response": []
+		},
+		{
+			"name": "cambiar estado a abierta",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Response status code is 200\", function () {",
+							"    pm.response.to.have.status(200);",
+							"});"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"method": "PATCH",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n\t\"estado\": 0\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": "{{base_url}}/actividades/{{ACTIVIDAD_ID}}",
+				"description": "Cambia el estado de una actividad a abierta."
+			},
+			"response": []
+		},
+		{
+			"name": "cambiar estado a cerrada invalida",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Response status code is 400 and message is correct\", function () {",
+							"    pm.response.to.have.status(400);",
+							"",
+							"    const responseJson = pm.response.json();",
+							"    const expectedMessage = \"No se puede cerrar la actividad: menos del 80% del cupo está ocupado.\";",
+							"",
+							"    pm.expect(responseJson).to.have.property(\"message\", expectedMessage);",
+							"});",
+							""
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"method": "PATCH",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n\t\"estado\": 1\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": "{{base_url}}/actividades/{{ACTIVIDAD_ID}}",
+				"description": "Cuando se intenta cambiar el estado a cerrada sin cumplir con las restricciones de cupos. Se lanza un error 400."
+			},
+			"response": []
+		}
+	],
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		}
+	],
+	"variable": [
+		{
+			"key": "id",
+			"value": "1"
+		},
+		{
+			"key": "base_url",
+			"value": "https://postman-rest-api-learner.glitch.me/"
+		}
+	]
+}

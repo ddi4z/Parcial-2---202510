@@ -9,5 +9,6 @@ import { ActividadesModule } from '../actividades/actividades.module';
   controllers: [EstudiantesController],
   providers: [EstudiantesService],
   imports: [TypeOrmModule.forFeature([Estudiante]), ActividadesModule],
+  exports: [EstudiantesService],
 })
 export class EstudiantesModule {}

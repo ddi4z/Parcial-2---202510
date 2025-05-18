@@ -1,10 +1,20 @@
-import { Controller, Get, Post, Body, Patch, Param } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Body,
+  Patch,
+  Param,
+  UseInterceptors,
+} from '@nestjs/common';
 import { ActividadesService } from './actividades.service';
 import { CreateActividadDto } from './dto/create-actividad.dto';
 import { plainToInstance } from 'class-transformer';
 import { Actividad } from './entities/actividad.entity';
 import { UpdateActividadDto } from './dto/update-actividad.dto';
+import { BusinessErrorsInterceptor } from '../shared/interceptors/business.errors.interceptor';
 
+@UseInterceptors(BusinessErrorsInterceptor)
 @Controller('actividades')
 export class ActividadesController {
   constructor(private readonly actividadesService: ActividadesService) {}

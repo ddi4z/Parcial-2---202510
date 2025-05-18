@@ -1,0 +1,256 @@
+{
+	"info": {
+		"_postman_id": "6dd30d15-616f-41c6-bdb6-9baa857337d1",
+		"name": "Reseñas",
+		"description": "Aqui se incluyen ejemplo de peticiones tanto negativas como positivas referentes a los endpoints asociados al recurso de Reseñas.",
+		"schema": "https://schema.getpostman.com/json/collection/v2.0.0/collection.json",
+		"_exporter_id": "21958576"
+	},
+	"item": [
+		{
+			"name": "crear estudiante",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"var data = pm.response.json();",
+							"pm.globals.set(\"ESTUDIANTE_ID\",data.id)",
+							"",
+							"pm.test(\"Response status code is 201\", function () {",
+							"    pm.response.to.have.status(201);",
+							"});",
+							""
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n  \"cedula\": 1000000000,\r\n  \"nombre\": \"Daniel Felipe Diaz Moreno\",\r\n  \"correo\": \"d.diazm@uniandes.edu.co\",\r\n  \"semestre\": 7,\r\n  \"programa\": \"sistemas\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": "{{base_url}}/estudiantes",
+				"description": "Esta petición POST crea un estudiante, el cual debe estar entre semestre 1 y 10. El cuerpo de la petición debe tener la cedula, nombre, correo, semestre y programa. Se usa esta petición para poder crear y asociar correctamente una reseña a un usuario existente."
+			},
+			"response": []
+		},
+		{
+			"name": "crear actividad",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"var data = pm.response.json();",
+							"pm.globals.set(\"ACTIVIDAD_ID\",data.id)",
+							"",
+							"pm.test(\"Response status code is 201\", function () {",
+							"    pm.response.to.have.status(201);",
+							"});",
+							""
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n  \"titulo\": \"Este es un titulo de ejemplo\",\r\n  \"fecha\": \"2025-05-18T15:30:00Z\",\r\n  \"cupoMaximo\": 1\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": "{{base_url}}/actividades",
+				"description": "Esta petición POST crea una actividad, la cual debe tener un titulo de al menos 15 caracteres y no debe tener caracteres especiales. Recibe un titulo, una fecha, y un cupo maximo. Toda actividad se crea con estado 0 (abierta). Esta petición se realiza ya que una reseña necesita de una actividad a reseñar."
+			},
+			"response": []
+		},
+		{
+			"name": "inscribir estudiante a actividad",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 201\", function () {",
+							"    pm.response.to.have.status(201);",
+							"});"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [],
+				"url": "{{base_url}}/estudiantes/{{ESTUDIANTE_ID}}/inscripcion/{{ACTIVIDAD_ID}}",
+				"description": "Este endpoint POST permite inscribir a un estudiante a una actividad, siempre y cuando ambos existan y el estudiante no este inscrito. Se usa en esta colección ya que es necesario que el estudiante que hace la reseña haya estado en la actividad."
+			},
+			"response": []
+		},
+		{
+			"name": "crear reseña con actividad no finalizada",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"var data = pm.response.json();",
+							"",
+							"pm.test(\"Response status code is 400\", function () {",
+							"    pm.response.to.have.status(400);",
+							"    ",
+							"    const responseJson = pm.response.json();",
+							"    const expectedMessage = \"La actividad no ha finalizado\";",
+							"",
+							"    pm.expect(responseJson).to.have.property(\"message\", expectedMessage);",
+							"});",
+							"",
+							"",
+							" ",
+							"",
+							"",
+							"",
+							"   "
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n  \"comentario\": \"buena actividad\",\r\n  \"calificacion\": 5,\r\n  \"fecha\": \"2025-05-18T15:30:00Z\",\r\n  \"estudianteId\": {{ESTUDIANTE_ID}},\r\n  \"actividadId\": {{ACTIVIDAD_ID}}\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": "{{base_url}}/resenas",
+				"description": "Se obtiene el error 400, debido a que la actividad a reseñar aun no ha finalizado."
+			},
+			"response": []
+		},
+		{
+			"name": "cambiar estado a finalizada",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Response status code is 200\", function () {",
+							"    pm.response.to.have.status(200);",
+							"});",
+							""
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"method": "PATCH",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n\t\"estado\": 2\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": "{{base_url}}/actividades/{{ACTIVIDAD_ID}}",
+				"description": "Se cierra la actividad para que el estudiante pueda realizar su reseña."
+			},
+			"response": []
+		},
+		{
+			"name": "crear reseña",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"var data = pm.response.json();",
+							"",
+							"pm.test(\"Response status code is 201\", function () {",
+							"    pm.response.to.have.status(201);",
+							"});",
+							""
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n  \"comentario\": \"buena actividad\",\r\n  \"calificacion\": 5,\r\n  \"fecha\": \"2025-05-18T15:30:00Z\",\r\n  \"estudianteId\": {{ESTUDIANTE_ID}},\r\n  \"actividadId\": {{ACTIVIDAD_ID}}\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": "{{base_url}}/resenas",
+				"description": "Se crea una reseña una vez todas las precondiciones se cumplan, la reseña tiene un comentario, una calificacion, una fecha y un estudiante y actividad."
+			},
+			"response": []
+		}
+	],
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		}
+	],
+	"variable": [
+		{
+			"key": "id",
+			"value": "1"
+		},
+		{
+			"key": "base_url",
+			"value": "https://postman-rest-api-learner.glitch.me/"
+		}
+	]
+}

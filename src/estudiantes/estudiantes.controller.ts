@@ -1,9 +1,18 @@
-import { Controller, Get, Post, Body, Param } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Body,
+  Param,
+  UseInterceptors,
+} from '@nestjs/common';
 import { EstudiantesService } from './estudiantes.service';
 import { CreateEstudianteDto } from './dto/create-estudiante.dto';
 import { plainToInstance } from 'class-transformer';
 import { Estudiante } from './entities/estudiante.entity';
+import { BusinessErrorsInterceptor } from '../shared/interceptors/business.errors.interceptor';
 
+@UseInterceptors(BusinessErrorsInterceptor)
 @Controller('estudiantes')
 export class EstudiantesController {
   constructor(private readonly estudiantesService: EstudiantesService) {}
@@ -19,7 +28,7 @@ export class EstudiantesController {
     return this.estudiantesService.findEstudianteById(+id);
   }
 
-  @Post(':estudianteID/inscripcion/actividadID')
+  @Post(':estudianteID/inscripcion/:actividadID')
   inscribirseActividad(
     @Param('estudianteID') estudianteID: string,
     @Param('actividadID') actividadID: string,
