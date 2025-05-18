@@ -1,3 +1,4 @@
+import { Type } from 'class-transformer';
 import {
   IsString,
   IsNotEmpty,
@@ -19,4 +20,12 @@ export class CreateReseñaDto {
 
   @IsDateString()
   fecha: string;
+
+  @IsNumber()
+  @Type(() => Number)
+  estudianteId: number;
+
+  @IsNumber()
+  @Type(() => Number)
+  actividadId: number;
 }
